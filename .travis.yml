@@ -5,5 +5,6 @@ os:
 compiler:
   - gcc
 script:
-  - build_allbutmac_mcstas
+  - cd McCode
+  - ./build_allbutmac_mcstas 2.3
 
