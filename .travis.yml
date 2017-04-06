@@ -1,0 +1,8 @@
+language: c
+os:
+  - linux
+compiler:
+  - gcc
+script:
+  - build_allbutmac_mcstas
+
