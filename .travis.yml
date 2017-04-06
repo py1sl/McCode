@@ -1,3 +1,4 @@
+# test of travis
 language: c
 os:
   - linux
