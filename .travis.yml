@@ -5,6 +5,5 @@ os:
 compiler:
   - gcc
 script:
-  - cd McCode
   - ./build_src_bin_mcstas 2.3
 
