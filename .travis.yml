@@ -6,7 +6,7 @@ compiler:
   - gcc
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get -qq install cmake cpack texlive gcc flex bison build-essentials etoolbox poppler-utils texlive-latex-extra
+  - sudo apt-get -qq install cmake texlive gcc flex bison build-essential etoolbox poppler-utils texlive-latex-extra
 script:
   - ./build_src_bin_mcstas 2.3
 
