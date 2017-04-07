@@ -6,4 +6,5 @@ compiler:
   - gcc
 script:
   - ./build_src_bin_mcstas 2.3
+  - mcrun --test
 
