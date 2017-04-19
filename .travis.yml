@@ -30,10 +30,10 @@ script:
   - ./build_debs_mcstas 2.4_sl
   - sudo dpkg -i dist/mcstas-2.3-linux64.deb
   - sudo dpkg -i dist/mcstas-tools-perl-cmdline-2.3-linux64.deb
-  - sudo dpkg -i dist/mcstas-tools-python-mcrun-2.3-linux64.deb
-  - sudo dpkg -i dist/mcstas-tools-python-mccodelib-2.3-linux64.deb
+  #- sudo dpkg -i dist/mcstas-tools-python-mcrun-2.3-linux64.deb
+  #- sudo dpkg -i dist/mcstas-tools-python-mccodelib-2.3-linux64.deb
   - sudo dpkg -i dist/mcstas-manuals-2.3-linux64.deb
   - sudo apt-get install -f
-  #- mcrun --test
+  - mcrun --test
   
 
