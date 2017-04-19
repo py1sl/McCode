@@ -24,4 +24,18 @@ before_install:
   - cmake -version
 script:
   - ./build_debs_mcstas 2.3
+  - sudo dpkg -i dist/mcstas-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-perl-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-perl-cmdline-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-matlab-mcplot-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-python-mcplot-pyqtgraph-2.3-linux64.de
+  - sudo dpkg -i dist/mcstas-tools-python-mcrun-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-python-mcgui-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-python-mccodelib-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-python-mcdisplay-webgl-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-python-mcdisplay-pyqtgraph-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-python-mcdisplay-mantid-2.3-linux64.deb
+  - sudo dpkg -i dist/mcstas-manuals-2.3-linux64.deb
+  - sudo apt-get install -f
+  
 
