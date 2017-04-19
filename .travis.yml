@@ -42,5 +42,6 @@ script:
   - sudo dpkg -i dist/mcstas-manuals-2.3-linux64.deb
   - sudo apt-get install -f
   # - sudo dpkg -i dist/mcstas-tools-perl-2.3-linux64.deb
+  - mcrun --test
   
 
