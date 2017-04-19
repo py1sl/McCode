@@ -27,7 +27,7 @@ before_install:
   - sudo dpkg-reconfigure dash
   - cmake -version
 script:
-  - ./build_debs_mcstas 2.3
+  - ./build_debs_mcstas 2.4_sl
   - sudo dpkg -i dist/mcstas-2.3-linux64.deb
   - sudo dpkg -i dist/mcstas-tools-perl-cmdline-2.3-linux64.deb
   - sudo dpkg -i dist/mcstas-tools-python-mcrun-2.3-linux64.deb
