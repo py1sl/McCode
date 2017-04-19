@@ -4,9 +4,16 @@ os:
   - linux
 compiler:
   - gcc
+addons:
+  apt:
+    sources:
+      - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
+    packages:
+      - cmake
+      - cmake-data
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get -qq install cmake texlive gcc flex bison build-essential etoolbox poppler-utils texlive-latex-extra
+  - sudo apt-get -qq install texlive gcc flex bison build-essential etoolbox poppler-utils texlive-latex-extra
   - sudo dpkg-reconfigure dash
   - cmake -version
 script:
