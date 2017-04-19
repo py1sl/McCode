@@ -7,6 +7,8 @@ compiler:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get -qq install cmake texlive gcc flex bison build-essential etoolbox poppler-utils texlive-latex-extra
+  - sudo dpkg-reconfigure dash
+  - cmake -version
 script:
   - ./build_debs_mcstas 2.3
 
