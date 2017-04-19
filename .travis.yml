@@ -11,9 +11,15 @@ addons:
     packages:
       - cmake
       - cmake-data
+      - gcc
+      - flex
+      - bison
+      - build-essential
+      - etoolbox
+      - poppler-utils
+      - texlive
+      - texlive-latex-extra
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get -qq install texlive gcc flex bison build-essential etoolbox poppler-utils texlive-latex-extra
   - sudo dpkg-reconfigure dash
   - cmake -version
 script:
