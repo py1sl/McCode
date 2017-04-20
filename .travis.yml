@@ -30,10 +30,18 @@ script:
   - ./build_debs_mcstas 2.4_sl
   - sudo dpkg -i dist/mcstas-2.4_sl-linux64.deb
   - sudo dpkg -i dist/mcstas-tools-perl-cmdline-2.4_sl-linux64.deb
-  #- sudo dpkg -i dist/mcstas-tools-python-mcrun-2.4_sl-linux64.deb
-  #- sudo dpkg -i dist/mcstas-tools-python-mccodelib-2.4_sl-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-python-mcrun-2.4_sl-linux64.deb
+  - sudo dpkg -i dist/mcstas-tools-python-mccodelib-2.4_sl-linux64.deb
   - sudo dpkg -i dist/mcstas-manuals-2.4_sl-linux64.deb
   - sudo apt-get install -f
-  - mcrun --test
+  #- mcrun --test
+  # now try mcxtrace
+  - ./build_debs_mcxtrace 2.4_sl
+  - sudo dpkg -i dist/mcxtrace-2.4_sl-linux64.deb
+  - sudo dpkg -i dist/mcxtrace-tools-perl-cmdline-2.4_sl-linux64.deb
+  - sudo dpkg -i dist/mcxtrace-tools-python-mxrun-2.4_sl-linux64.deb
+  - sudo dpkg -i dist/mcxtrace-tools-python-mccodelib-2.4_sl-linux64.deb
+  - sudo dpkg -i dist/mcxtrace-manuals-2.4_sl-linux64.deb
+  - sudo apt-get install -f
   
 
