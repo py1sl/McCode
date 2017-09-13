@@ -27,7 +27,7 @@ def build_header(options, params, intervals, detectors):
     """.strip()
 
     # Date format: Fri Aug 26 12:21:39 2011
-    date = datetime.strftime(datetime.now(), '%a %b %d %T %Y')
+    date = datetime.strftime(datetime.now(), '%a %b %d %H %M %Y')
 
     xvars = ', '.join(params)
     lst = intervals[list(params)[0]]
@@ -100,7 +100,7 @@ end data
     """.strip()
     
     # Date format: Fri Aug 26 12:21:39 2011
-    date = datetime.strftime(datetime.now(), '%a %b %d %T %Y')
+    date = datetime.strftime(datetime.now(), '%a %b %d %H %M %Y')
 
     xvars = ', '.join(params)
     lst = intervals[list(params)[0]]
@@ -219,6 +219,8 @@ class Scanner:
         
         # each run will be in "dir/1", "dir/2", ...
         mcstas_dir = self.mcstas.options.dir
+        if mcstas_dir == '':
+            mcstas_dir ='.'
         
         for i, point in enumerate(self.points):
             par_values = []

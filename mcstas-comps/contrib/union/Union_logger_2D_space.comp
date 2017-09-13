@@ -6,7 +6,6 @@
 * %I
 * Written by: Mads Bertelsen
 * Date: 20.08.15
-* Version: $Revision: 0.1 $
 * Origin: Svanevej 19
 *
 * A sample component to separate geometry and phsysics
@@ -46,18 +45,18 @@
 *
 * %P
 * INPUT PARAMETERS:
-* D_direction_1:   [string] Direction for first axis ("x", "y" or "z")
-* D1_max:          [1] histogram boundery, max position value for first axis
-* D1_min:          [1] histogram boundery, min position value for first axis
-* n1:              [1] number of bins for first axis
-* D_direction_2:   [string] Direction for second axis ("x", "y" or "z")
-* D2_max:          [1] histogram boundery, max position value for second axis
-* D2_min:          [1] histogram boundery, min position value for second axis
-* n2:              [1] number of bins for second axis
-* target_geometry: [string] Comma seperated list of geometry names that will be logged, leave empty for all volumes (even not defined yet)
-* target_process:  [string] Comma seperated names of physical processes, if volumes are selected, one can select Union_process names
-* order_total:     [1] Only log rays that scatter for the n'th time, 0 for all orders
-* order_volume:    [1] Only log rays that scatter for the n'th time in the same geometry
+* D_direction_1: [string]    Direction for first axis ("x", "y" or "z")
+* D1_max: [1]                histogram boundery, max position value for first axis
+* D1_min: [1]                histogram boundery, min position value for first axis
+* n1: [1]                    number of bins for first axis
+* D_direction_2: [string]    Direction for second axis ("x", "y" or "z")
+* D2_max: [1]                histogram boundery, max position value for second axis
+* D2_min: [1]                histogram boundery, min position value for second axis
+* n2: [1]                    number of bins for second axis
+* target_geometry: [string]  Comma seperated list of geometry names that will be logged, leave empty for all volumes (even not defined yet)
+* target_process: [string]   Comma seperated names of physical processes, if volumes are selected, one can select Union_process names
+* order_total: [1]           Only log rays that scatter for the n'th time, 0 for all orders
+* order_volume: [1]          Only log rays that scatter for the n'th time in the same geometry
 * order_volume_process [1] Only log rays that scatter for the n'th time in the same geometry, using the same process
 * logger_conditional_extend_index [1] If a conditional is used with this logger, the result of each conditional calculation can be made available in extend as a array called "logger_conditional_extend", and one would then acces logger_conditional_extend[n] if logger_conditional_extend_index is set to n
 *
@@ -88,29 +87,29 @@ SHARE
 #endif
 
 struct temp_2DS_data_element_struct {
- int index_1;
- int index_2;
- double weight;
+int index_1;
+int index_2;
+double weight;
 };
 
 struct temp_2DS_data_struct {
-  int num_elements;
-  int allocated_elements;
-  struct temp_2DS_data_element_struct *elements;
+int num_elements;
+int allocated_elements;
+struct temp_2DS_data_element_struct *elements;
 };
 
 struct a_2DS_storage_struct {
-  struct Detector_2D_struct Detector_2D;
-  struct temp_2DS_data_struct temp_2DS_data;
-  int dim_1_choice;
-  int dim_2_choice;
-  int order;
-  int order_in_this_volume;
-  int order_process_in_this_volume;
-  
-  Coords position;
-  Rotation rotation;
-  Rotation t_rotation;
+struct Detector_2D_struct Detector_2D;
+struct temp_2DS_data_struct temp_2DS_data;
+int dim_1_choice;
+int dim_2_choice;
+int order;
+int order_in_this_volume;
+int order_process_in_this_volume;
+
+Coords position;
+Rotation rotation;
+Rotation t_rotation;
 };
 
 // record_to_temp
@@ -168,56 +167,57 @@ void record_to_temp_2DS(Coords *position, double *k_new, double *k_old, double p
     if (p1>storage->Detector_2D.D1min && p1<storage->Detector_2D.D1max && p2>storage->Detector_2D.D2min && p2<storage->Detector_2D.D2max) {
       i = floor((p1 - storage->Detector_2D.D1min)*storage->Detector_2D.bins_1/(storage->Detector_2D.D1max - storage->Detector_2D.D1min));
       j = floor((p2 - storage->Detector_2D.D2min)*storage->Detector_2D.bins_2/(storage->Detector_2D.D2max - storage->Detector_2D.D2min));
-    }
-
-    // Save bin in histogram to temp (may need to allocate more memory)
-    int index;
-    //printf("number of data points used: %d space allocated for %d data points. \n",storage->temp_2DS_data.num_elements,storage->temp_2DS_data.allocated_elements);
+    
+      // Save bin in histogram to temp (may need to allocate more memory)
+      int index;
+      //printf("number of data points used: %d space allocated for %d data points. \n",storage->temp_2DS_data.num_elements,storage->temp_2DS_data.allocated_elements);
   
-    if (storage->temp_2DS_data.num_elements < storage->temp_2DS_data.allocated_elements) {
-      storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements].index_1 = i;
-      storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements].index_2 = j;
-      storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements++].weight = p;
-    } else {
-      // No more space, need to allocate a larger buffer for this logger. Wish I had generics.
+      if (storage->temp_2DS_data.num_elements < storage->temp_2DS_data.allocated_elements) {
+        storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements].index_1 = i;
+        storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements].index_2 = j;
+        storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements++].weight = p;
+      } else {
+        // No more space, need to allocate a larger buffer for this logger. Wish I had generics.
     
-      // copy current data to temp
-      struct temp_2DS_data_struct temporary_storage;
-      temporary_storage.num_elements = storage->temp_2DS_data.num_elements;
-      temporary_storage.elements = malloc(temporary_storage.num_elements*sizeof(struct temp_2DS_data_element_struct));
+        // copy current data to temp
+        struct temp_2DS_data_struct temporary_storage;
+        temporary_storage.num_elements = storage->temp_2DS_data.num_elements;
+        temporary_storage.elements = malloc(temporary_storage.num_elements*sizeof(struct temp_2DS_data_element_struct));
     
-      for (index=0;index<storage->temp_2DS_data.num_elements;index++) {
-        temporary_storage.elements[index].index_1 = storage->temp_2DS_data.elements[index].index_1;
-        temporary_storage.elements[index].index_2 = storage->temp_2DS_data.elements[index].index_2;
-        temporary_storage.elements[index].weight = storage->temp_2DS_data.elements[index].weight;
-      }
+        for (index=0;index<storage->temp_2DS_data.num_elements;index++) {
+          temporary_storage.elements[index].index_1 = storage->temp_2DS_data.elements[index].index_1;
+          temporary_storage.elements[index].index_2 = storage->temp_2DS_data.elements[index].index_2;
+          temporary_storage.elements[index].weight = storage->temp_2DS_data.elements[index].weight;
+        }
       
-      // free current data
-      free(storage->temp_2DS_data.elements);
+        // free current data
+        free(storage->temp_2DS_data.elements);
     
-      // allocate larger array (10 larger)
-      storage->temp_2DS_data.allocated_elements = 10 + storage->temp_2DS_data.num_elements;
-      storage->temp_2DS_data.elements = malloc(storage->temp_2DS_data.allocated_elements*sizeof(struct temp_2DS_data_element_struct));
+        // allocate larger array (10 larger)
+        storage->temp_2DS_data.allocated_elements = 10 + storage->temp_2DS_data.num_elements;
+        storage->temp_2DS_data.elements = malloc(storage->temp_2DS_data.allocated_elements*sizeof(struct temp_2DS_data_element_struct));
     
-      // copy back from temp
-      for (index=0;index<storage->temp_2DS_data.num_elements;index++) {
-        storage->temp_2DS_data.elements[index].index_1 = temporary_storage.elements[index].index_1;
-        storage->temp_2DS_data.elements[index].index_2 = temporary_storage.elements[index].index_2;
-        storage->temp_2DS_data.elements[index].weight = temporary_storage.elements[index].weight;
+        // copy back from temp
+        for (index=0;index<storage->temp_2DS_data.num_elements;index++) {
+          storage->temp_2DS_data.elements[index].index_1 = temporary_storage.elements[index].index_1;
+          storage->temp_2DS_data.elements[index].index_2 = temporary_storage.elements[index].index_2;
+          storage->temp_2DS_data.elements[index].weight = temporary_storage.elements[index].weight;
+        }
+    
+        // free temporary data
+        free(temporary_storage.elements);
+    
+        // add new data point
+        storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements].index_1 = i;
+        storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements].index_2 = j;
+        storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements++].weight = p;
       }
-    
-      // free temporary data
-      free(temporary_storage.elements);
-    
-      // add new data point
-      storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements].index_1 = i;
-      storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements].index_2 = j;
-      storage->temp_2DS_data.elements[storage->temp_2DS_data.num_elements++].weight = p;
-    }
   
-    // If this is the first time this ray is being recorded in this logger, add it to the list of loggers that write to temp and may get it moved to perm
-    if (storage->temp_2DS_data.num_elements == 1)
-      add_to_logger_with_data(logger_with_data_array,logger);
+      // If this is the first time this ray is being recorded in this logger, add it to the list of loggers that write to temp and may get it moved to perm
+      if (storage->temp_2DS_data.num_elements == 1)
+        add_to_logger_with_data(logger_with_data_array,logger);
+      
+    }
   }
   
 }
@@ -304,19 +304,20 @@ void record_to_perm_2DS(Coords *position, double *k_new, double *k_old, double p
 
 // write_temp_to_perm
 void write_temp_to_perm_2DS(union logger_data_union *data_union) {
-
   struct a_2DS_storage_struct *storage;
   storage = data_union->p_2DS_storage;
 
   int index;
   // Add all data points to the historgram, they are saved as index / weight combinations
   for (index=0;index<storage->temp_2DS_data.num_elements;index++) {
+  
     storage->Detector_2D.Array_N[storage->temp_2DS_data.elements[index].index_1][storage->temp_2DS_data.elements[index].index_2]++;
     
     storage->Detector_2D.Array_p[storage->temp_2DS_data.elements[index].index_1][storage->temp_2DS_data.elements[index].index_2] += storage->temp_2DS_data.elements[index].weight;
     
     storage->Detector_2D.Array_p2[storage->temp_2DS_data.elements[index].index_1][storage->temp_2DS_data.elements[index].index_2] += storage->temp_2DS_data.elements[index].weight*storage->temp_2DS_data.elements[index].weight;
   }
+  
   clear_temp_2DS(data_union);
 }
 

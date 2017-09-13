@@ -62,6 +62,7 @@ class InstrTraceParser:
               'ABSPATH',
               'DEC',
               'ID',
+              'INSTRNAME',
               ] + list(set(reserved.values()))
     
     t_LB = r'\('
@@ -77,7 +78,7 @@ class InstrTraceParser:
         return t
     
     def t_ABSPATH(self, t):
-        r'[/\w\\\:]+.instr'
+        r'[/\w\\\:\-]+\.instr'
         return t
     
     def t_DEC(self, t):
@@ -89,8 +90,12 @@ class InstrTraceParser:
         t.type = self.reserved.get(t.value, 'ID')
         return t
     
+    def t_INSTRNAME(self, t):
+        r'\w[\w\-0-9]*'
+        return t
+    
     # ignore whitespaces and tabs means that we do not tokenize them, but they are still applied in the regex checks defined above for our tokens
-    t_ignore = r' \t'
+    t_ignore = ' \t'
     
     def t_error(self, t):
         print('error: %s' % t.value)
@@ -119,7 +124,8 @@ class InstrTraceParser:
         'instr_end : INSTRUMENT END COLON NL'
         
     def p_instr_name(self, p):
-        'instr_name : ID'
+        '''instr_name : INSTRNAME
+                      | ID '''
         p[0] = Node(type='instr_name', leaf=p[1])
     
     comps = Node(type='comps')

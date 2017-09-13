@@ -172,7 +172,7 @@ class McStas:
         args = ['-o', self.binpath, self.cpath] + cflags
         Process(options.cc).run(args)
         if sys.platform=="darwin":
-            args = ['-add_rpath', os.path.join(mccode_config.configuration['MCCODE_LIB_DIR'],'..','..','miniconda3','lib'), self.binpath]
+            args = ['-add_rpath', os.path.join(mccode_config.configuration['MCCODE_LIB_DIR'],'miniconda3','lib'), self.binpath]
             Process("install_name_tool").run(args)
             
     def run(self, pipe=False, extra_opts=None, override_mpi=None):
@@ -188,7 +188,7 @@ class McStas:
             # try extra_opts before options
             default = getattr(options, opt.replace('-', '_'))
             val = extra_opts.get(opt, default)
-            if val is not None:
+            if val is not None and val is not '':
                 args.extend(['--%s' % opt, str(val)])
 
         # Handle proxy options without values (flags)

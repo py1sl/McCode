@@ -39,9 +39,9 @@ require "mccode_config.perl";
 use POSIX qw(_exit);
 
 # Overload with user's personal config
-if ($ENV{"HOME"} && -e $ENV{"HOME"}."/.".$MCSTAS::mcstas_config{'MCCODE'}."/mccode_config.perl") {
-  print "mcrun: reading local $MCSTAS::mcstas_config{'MCCODE'} configuration from " . $ENV{"HOME"}."/.".$MCSTAS::mcstas_config{'MCCODE'}."/mccode_config.perl\n";
-  require $ENV{"HOME"}."/.".$MCSTAS::mcstas_config{'MCCODE'}."/mccode_config.perl";
+if ($ENV{"HOME"} && -e $ENV{"HOME"}."/.".$MCSTAS::mcstas_config{'MCCODE'}."/".$MCSTAS::mcstas_config{'VERSION'}."/mccode_config.perl") {
+  print "mcrun: reading local $MCSTAS::mcstas_config{'MCCODE'} configuration from " . $ENV{"HOME"}."/.".$MCSTAS::mcstas_config{'MCCODE'}."/".$MCSTAS::mcstas_config{'VERSION'}."/mccode_config.perl\n";
+  require $ENV{"HOME"}."/.".$MCSTAS::mcstas_config{'MCCODE'}."/".$MCSTAS::mcstas_config{'VERSION'}."/mccode_config.perl";
 }
 
 use FileHandle;
@@ -463,7 +463,7 @@ sub exec_sim {
       push @opt, map("$_=$vals{$_}", @params);
       push @opt, "--format=PGPLOT";
       push @opt, "--ncount=$hostncount";
-      my $cmd="$MCSTAS::mcstas_config{'RUNCMD'}$MCSTAS::mcstas_config{'SUFFIX'} --slave=$hostnames[$j] $out_file --dir=$datadirs[$j]  @opt > $griddir/$hostnames[$j]_$j.log";
+      my $cmd="$MCSTAS::mcstas_config{'RUNCMD'} --slave=$hostnames[$j] $out_file --dir=$datadirs[$j]  @opt > $griddir/$hostnames[$j]_$j.log";
       if ($ncount) {
         $pids[$j]->Proc::Simple::start($cmd);  # asynchronous exec
       }
@@ -1012,7 +1012,7 @@ sub do_scan {
             our $pid;
             if ($Config{'osname'} eq 'MSWin32') {
                 # Win32 needs all possible parameters here, since we can not open(SIM,"-|");
-                my @cmdlist = ("$MCSTAS::mcstas_config{'RUNCMD'}$MCSTAS::mcstas_config{'SUFFIX'}",
+                my @cmdlist = ("$MCSTAS::mcstas_config{'RUNCMD'}",
                               $out_file, "--ncount=$ncount", @options, map("$_=$vals{$_}", @params),
                               $force_compile && ($multi >= 1 || $slave ne 0) ? "--force-compile" : "",
                 							$output_opt ? "--dir=$output_opt" : "--no-output-files",
@@ -1211,7 +1211,7 @@ our $scan_info = check_input_params(); # Get variables to scan, if any
 ($out_file, undef) = get_out_file($sim_def, $force_compile && !$multi && $slave eq 0, $mpi, $cflags, @ccopts);
 exit(1) unless $out_file;
 if ($Config{'osname'} eq 'darwin') {
-  my_system("install_name_tool -add_rpath $MCSTAS::sys_dir/../../miniconda3/lib $out_file");
+  my_system("install_name_tool -add_rpath $MCSTAS::sys_dir/miniconda3/lib $out_file");
 }
 
 $instr_info = get_sim_info("$out_file","--format=$MCSTAS::mcstas_config{'PLOTTER'}");

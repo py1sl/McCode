@@ -1,57 +1,63 @@
-/************************************************************************'
- * 
- * McXtrace X-ray tracing software
- * Copyright, All Rights Reserved
- * Risoe-DTU, Roskilde, Denmark
- *
- *
- * Component: Undulator
- *
- * %I
- * Written by: Erik B. Knudsen
- * Date: May, 2013.
- * Version: 1.0
- * Origin: DTU Physics
- * Release: McXtrace 1.2
- *
- * Model of an undulator source
- * 
- * %D
- * A undulator source model based on the derivation by K.J. Kim, AIP, conf. proc., 184, 1989. doi:10.1063/1.38046.
- *
- *
- *
- * %P
- * Input Parameters:
- * Ee: (GeV) Storage ring electron energy (typically a few GeV).
- * Ie: (A)   Ring current.
- * tbunch: (s) Bunch length. 0 means continous source.
- * t0:     (s) Delay of the first bunch from t=0.
- * B:      (T) Peak magnet field strength. Overrides K.
- * Nper:   ( ) Number of magnetic periods in the undulator.
- * lu:     (m) Magnetic period length of the undulator.
- * K:      ( ) Dimensionless undulator parameter.
- * gap_min (m) Minimum Undulator gap. The gap for which B (or K) is specified.
- * gap:    (m) Undulator gap. If > gap_min the actual magnetic field strength is < B. Currently ignored.
- * sigex:  (m) Electron ring beam size in horizontal plane (rms).
- * sigey:  (m) Electron ring beam size in vertical plane (rms).
- * sigepx: (rad) Electron ring beam horizontal divergence (rms).
- * sigepy: (rad) Electron ring beam vertical divergence (rms).
- * phase:  ( ) Initial phase of radiation.
- * randomphase: ( ) If !=0 phase will be random (I.e. the emitted radiation is completely incoherent).
- * focus_xw: (m) Width of target window.
- * focus yh: (m) Height of target window.
- * dist: (m) Distance from source plane to target window along the optical axis.
- * E0: (keV) Center of emitted energy spectrum (overrides lambda0).
- * dE: (keV) Half-width of emitted energy spectrum.
- * verbose: ( ) if nonzero, output extra information.
- * quick_integ: ( ) if nonzero, use faster (but less accurate) integration scheme.
-*/
+/************************************************************************
+*
+* McXtrace X-ray tracing software
+* Copyright, All Rights Reserved
+* Risoe-DTU, Roskilde, Denmark
+*
+*
+* Component: Undulator
+*
+* %I
+* Written by: Erik B. Knudsen
+* Date: May, 2013.
+* Version: 1.0
+* Origin: DTU Physics
+* Release: McXtrace 1.2
+*
+* Model of an undulator source
+*
+* %D
+* A undulator source model based on the derivation by K.J. Kim, AIP, conf. proc., 184, 1989. doi:10.1063/1.38046.
+*
+*
+*
+* %P
+* Ee: [GeV] Storage ring electron energy [typically a few GeV).
+* dEe: [ ] Relative electron energy beam spread (sigma/Ee).
+* Ie: [A]   Ring current.
+* tbunch: [s] Bunch length. 0 means continous source.
+* t0:     [s] Delay of the first bunch from t=0.
+* B:      [T] Peak magnet field strength. Overrides K.
+* Nper:   [ ] Number of magnetic periods in the undulator.
+* lu:     [m] Magnetic period length of the undulator.
+* K:      [ ] Dimensionless undulator parameter.
+* gap_min [m] Minimum Undulator gap. The gap for which B (or K) is specified.
+* gap:    [m] Undulator gap. If > gap_min the actual magnetic field strength is < B. Currently ignored.
+* sigex:  [m] Electron ring beam size in horizontal plane (rms).
+* sigey:  [m] Electron ring beam size in vertical plane (rms).
+* sigepx: [rad] Electron ring beam horizontal divergence (rms).
+* sigepy: [rad] Electron ring beam vertical divergence (rms).
+* phase:  [ ] Initial phase of radiation.
+* randomphase: [ ] If !=0 phase will be random (I.e. the emitted radiation is completely incoherent).
+* focus_xw: [m] Width of target window.
+* focus yh: [m] Height of target window.
+* dist: [m] Distance from source plane to target window along the optical axis.
+* E0: [keV] Center of emitted energy spectrum (overrides lambda0).
+* dE: [keV] Half-width of emitted energy spectrum.
+* E1st: [keV] Energy of the fundmental (1st) undulator harmonic.
+* verbose: [ ] if nonzero, output extra information.
+* quick_integ: [ ] if nonzero, use faster (but less accurate) integration scheme.
+*
+* OUTPUT PARAMETERS:
+*
+* %E
+*****************************************************************/
 
 DEFINE COMPONENT Undulator
 DEFINITION PARAMETERS (verbose=0)
-SETTING PARAMETERS (E0=0, dE=0, phase=0, randomphase=1, Ee=2.4, Ie=0.4, tbunch=0, t0=0, B=0, K=0,
-        gap=1e-3, int Nper=1, lu=16e-3, sigey=0, sigex=0, sigepx=0, sigepy=0, focus_xw=0, focus_yh=0, dist=1, gauss_t=0, quick_integ=0)
+SETTING PARAMETERS (E0=0, dE=0, phase=0, randomphase=1, Ee=2.4, dEe=0, Ie=0.4, tbunch=0, t0=0, B=0, K=0,
+        gap=1e-3, int Nper=1, lu=16e-3, sigey=0, sigex=0, sigepx=0, sigepy=0, focus_xw=0, focus_yh=0, dist=1, gauss_t=0, quick_integ=0,
+        E1st=0)
 OUTPUT PARAMETERS (prms,alpha,MELE)
 DEPENDENCY "-lgsl -lgslcblas"
 /* X-ray parameters: (x,y,z,kx,ky,kz,phi,t,Ex,Ey,Ez,p) */ 
@@ -113,6 +119,8 @@ DECLARE
   /*electron mass from CODATA in kg*/
   const double MELE=9.10938291e-31;
   //double besselj[nharm],besselh[nharm];
+
+
 %}
 
 
@@ -122,12 +130,22 @@ INITIALIZE
   
   prms.length=lu*Nper;
 
-  if( (!K && B<=0) || Ee<=0 || Ie<=0 ){
-    fprintf(stderr, "Error (%s): K, B, Ee, and Ie do not have a sane set of values. Found (%g %g %g %g). Aborting.\n",NAME_CURRENT_COMP,K,B,Ee,Ie);
+  if( (!E1st && !K && B<=0) || Ee<=0 || Ie<=0 ){
+    fprintf(stderr, "Error (%s): E1st, K, B, Ee, and Ie do not have a sane set of values. Found (%g %g %g %g %g). Aborting.\n",NAME_CURRENT_COMP,E1st,K,B,Ee,Ie);
     exit(1);
   }
 
-  if(B>0){
+  /*compute gamma*/
+  prms.gamma=(Ee*1e9)/(MELE/CELE*M_C*M_C);/*the extra CELE is to convert to eV*/
+  prms.gamma2=prms.gamma*prms.gamma;
+  prms.igamma=1.0/prms.gamma;
+
+  if(E1st){
+      /*compute K and B from desired target energy*/
+      K=sqrt(2*(4*M_PI*prms.gamma2/(E2K*E1st*lu*1e10) -1));
+      B=2*M_PI*MELE*M_C*K/CELE/lu;
+      if (verbose) printf("Undulator (%s) (K,B)=f(E1st=%g)= (%g , %g)\n",NAME_CURRENT_COMP,E1st,K,B);
+  }else if(B>0){
     K=CELE*B*lu/(2*M_PI*MELE*M_C);
     if (verbose) printf("Undulator (%s) K=f(B=%g)= %g\n",NAME_CURRENT_COMP,B,K);
   }else if (K){
@@ -144,10 +162,6 @@ INITIALIZE
     exit(1);
   }
 
-  /*compute gamma*/
-  prms.gamma=(Ee*1e9)/(MELE/CELE*M_C*M_C);/*the extra CELE is to convert to eV*/
-  prms.gamma2=prms.gamma*prms.gamma;
-  prms.igamma=1.0/prms.gamma;
 
   //printf("Undulator (%s): gamma=%g, divergence is 1/gamma=%g rad.\n",NAME_CURRENT_COMP,prms.gamma,prms.igamma);
   /*compute characteristic energy in keV*/
@@ -164,7 +178,13 @@ INITIALIZE
   prms.Bpi.function = &mxundulator_Bpi_integrand;
   gsl_set_error_handler_off();
 
+  /*correct for number of rays*/
   prms.pmul=1.0/( (double) mcget_ncount());
+
+  /*correct for finite energy interval*/
+  if(dE){
+      prms.pmul*=dE*2.0;
+  }
 
 %}
 
@@ -179,12 +199,14 @@ TRACE
 
     /* pick an energy in the given interval */
     e=E0+randpm1()*dE;
-/*    double rtt=rand01();*/
-/*    if(rtt<0.5){*/
-/*        e=E0;*/
-/*    }else{*/
-/*        e=2*E0;*/
-/*    }*/
+
+    /* add electron beam energy spread to gamma parameters (if necessary).*/
+    if( dEe){
+        double deltaEe=(randnorm()*dEe*Ee)+ Ee;
+        prms.gamma=(deltaEe*1e9)/(MELE/CELE*M_C*M_C);/*the extra CELE is to convert to eV*/
+        prms.gamma2=prms.gamma*prms.gamma;
+        prms.igamma=1.0/prms.gamma;
+    }
 
     /* the undulator's fundamental wavelength*/
     w_u=2*M_PI*M_C/lu;
@@ -239,6 +261,7 @@ TRACE
     ky*=k;
     kz*=k;
 
+
     double w1theta=2*prms.gamma2/(1+K*K/2.0 + prms.gamma2 *theta2) * w_u; 
     double w10=2*prms.gamma2/(1+K*K/2.0) * w_u; 
     double w_w1=w/w1theta;
@@ -246,8 +269,8 @@ TRACE
 
     double Bsig_integ_prms[4],Bpi_integ_prms[4];
     Bsig_integ_prms[0] = Bpi_integ_prms[0]=w_w1; /*relative frequency*/
-    Bsig_integ_prms[1] = Bpi_integ_prms[1] = 2*w_w1*xi*prms.gamma*K/(1+K*K/2.0); /*p*/
-    Bsig_integ_prms[2] = Bpi_integ_prms[1] = 0.25 * w_w1*K*K/(1+K*K/2.0); /*q*/
+    Bsig_integ_prms[1] = Bpi_integ_prms[1] = 2*w_w10*xi*prms.gamma*K/(1+K*K/2.0); /*p*/
+    Bsig_integ_prms[2] = Bpi_integ_prms[2] = 0.25 * w_w10*K*K/(1+K*K/2.0); /*q*/
     Bsig_integ_prms[3] = xi *prms.gamma/K; /*angle terms*/
     Bpi_integ_prms[3]  = psi*prms.gamma/K; 
 
@@ -269,8 +292,7 @@ TRACE
     
     double prefactor=alpha*Ie/CELE*pow(K*prms.gamma/(1+K*K/2.0),2.0)*Nper*Nper*w_w10*w_w10;
 
-    p*=prefactor* (pow(bsigma_integral,2.0)+pow(bpi_integral,2.0) ) *s_n2;
-    p=p;
+    p*=prefactor* ( pow(bsigma_integral,2.0)+pow(bpi_integral,2.0) ) *s_n2;
 
     /*randomly pick phase*/
     if (randomphase){
@@ -279,7 +301,7 @@ TRACE
         phi=phase;
     }
 
-    /*set polarization vector*/
+    /*Set polarization vector. TODO: Do this right.*/
     Ex=0;Ey=0;Ez=0;
 %}
 FINALLY

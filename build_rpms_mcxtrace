@@ -19,10 +19,12 @@ fi
 ./mkdist mcxtrace-tools-python-mccodelib $1 tools/Python/mccodelib/ "" rpm64 "" -- rpm
 ./mkdist mcxtrace-tools-python-mcdisplay-matplotlib $1 tools/Python/mcdisplay/matplotlib/ "" rpm64 "" -- rpm
 ./mkdist mcxtrace-tools-python-mcdisplay-webgl $1 tools/Python/mcdisplay/webgl/ "" rpm64 "" -- rpm
+./mkdist mcxtrace-clusterscripts $1 tools/cluster-scripts/ "" rpm64 "" -- rpm
 ./mkdist mcxtrace-manuals $1 docpkg/manuals/mcxtrace/ "" rpm64 "" -- rpm
 
 #build metapackages?
 if [ "x$2" != "x" ]; then
+  ./mkdist mcxtrace-miniconda3 $1 support/rpm/miniconda3/ "" rpm64 "" -- rpm
   cd meta-pkgs/rpm
 
   for controlfile in `ls mcxtrace-*.spec`

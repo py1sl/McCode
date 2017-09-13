@@ -35,10 +35,133 @@
 * Modified by: PW February-July 2014: version 2.1 (and the 2.1RC1 pre-release)
 * Modified by: PW and JG May 2015: versions 2.2 and 2.2a
 * Modified by: PW March 2016: version 2.3
-* This file is part of McStas version 2.3, released April 6th 2016.
+* Modified by: PW May 2017: version 2.4
+* Modified by: PW June 2017: version 2.4.1
+* This file is part of McStas version 2.4.1, released June 26th 2017.
 * It gives a 'changes' list from the beginning of the project
 *
 *******************************************************************************/
+Changes in McStas v.2.4.1, June 26th, 2017
+
+ McStas 2.4.1 is the sixth release in the 2.x series and fixes various issues with McStas 2.4, plus 
+ provides a small set of new developments.
+
+ Thanks:
+ - Thanks to all contributors of components, instruments etc.! This is what Open Source
+   and McStas is all about!
+
+ Fixes of issues from last release:
+ - A number of issues from 2.4 were corrected, see the relevant GitHub issues for details:
+   - https://github.com/McStasMcXtrace/McCode/issues?utf8=✓&q=is%3Aissue%20is%3Aclosed%20label%3A%22McStas%202.4%22%20
+
+ Tools:
+ - As for 2.4 we the default set of tools are Python-based and developed by Jakob Garde, DTU. 
+   The perl ones will stay around as a backup solution
+   - See https://github.com/McStasMcXtrace/McCode/wiki/User-documentation-for-the-2017--Python-tool-set for usage
+   - On Unix platforms, the perl tools are accessible by adding .pl to the wanted tool (mcgui.pl etc.)
+   - On Windows, the perl tools are accessible by adding -pl to the wanted tool (mcgui-pl etc.)
+   - BUT: Please use the Python tools and provide feedback rather that sticking with the Perl! :-)
+ - Minor feature developments:
+   - The mcrun utility script now automatically stores a copy of the instr file in the dataset output folder
+   - mcplot-pyqtgraph, mcdisplay-pyqtgraph and mcdisplay-webgl provide the --invcanvas to select white backgrounds in
+     the plots (for now only available from the commandline!)
+   - When installed, the mcstas-clusterscripts package provides an easy way to generate SLURM or PBS cluster batchfiles.
+     The Python mcgui allows to access these via the File -> Configuration menu.
+
+ Components and instruments:
+ - MCPL library still at v. 1.1
+   - A minor issue in MCPL_output.comp was fixed
+ - Minor updates to the ESS_butterfly_MCPL.instr, see also:
+   https://confluence.esss.lu.se/display/MCSTAS/Using+MCPL+as+source+term+in+McStas
+ - SNS_BASIS - model of the BASIS backscattering instrument at SNS, from Niko Tsapatsaris, ESS.
+   Further serves as test instrument for two component contributions from the same author:
+   - Spherical_Backscattering_Analyser, a spherical backscattering analyser with variable reflectivity
+     and mosaic gaussian response.
+   - Guide_m, guide piece like the normal Guide.comp, but with independent reflectivity specification
+     for all four mirrors.
+
+
+Changes in McStas v.2.4, May 17th, 2017
+
+ McStas 2.4 is the fifth release in the 2.x series and fixes various issues with McStas 2.3, plus 
+ provides important new developments.
+
+ Thanks:
+ - Thanks to all contributors of components, instruments etc.! This is what Open Source
+   and McStas is all about!
+
+
+ Tools:
+ - From 2.4 we will default to use our new set of Python tools, developed by Jakob Garde, DTU. 
+   The perl ones will stay around as a backup solution
+   - See https://github.com/McStasMcXtrace/McCode/wiki/User-documentation-for-the-2017--Python-tool-set for usage
+   - On Unix platforms, the perl tools are accessible by adding .pl to the wanted tool (mcgui.pl etc.)
+   - On Windows, the perl tools are accessible by adding -pl to the wanted tool (mcgui-pl etc.)
+   - BUT: Please use the Python tools and provide feedback rather that sticking with the Perl! :-)
+ - Our Python tools are now Python 3 compliant
+ - A mcgui editor with rich syntax highlighting
+ - A mcrun utility script, with a few new features wrt. the legacy perl solution:
+   - The feature --autoplot spawns your selected plotter on sim completion
+   - The feature --multi (or -M) allows grid-scanning, i.e. multidimensional scans
+   - The --list (or -L) allows to make 1D-scans that are not equidistant, or even filename strings, etc…
+ - A newly developed mcplot-pyqtgraph, optically similar to the legacy mcplot solution, but with new features:
+   - Easy mouse-based zooming and panning on individual monitor plots
+   - Colormaps can be changed for 2D-plots
+   - Select a single plot by clicking, get back to the overview by right-clicking, or by pressing 'b'
+   - On scans ctrl-click (meta-click on OS X) to see monitor as function of scanned variable
+   - On scans press 'x' to receive all scan points as individual plot windows
+ - A newly developed mcdisplay-webgl
+   - Fully 3D and interactive, uses your HTML5-capable browser with javascript controls
+   - Pause or resume visualisation of the neutron rays in the instrument
+   - Allows to keep already rendered rays to illustrate the full beam
+   - Visualises rays with color, scaled with particle velocity (ideal for illustrating e.g. monochromatisation)
+ - A newly developed mcdisplay-pyqtgraph, modeled after the legacy mcdisplay tool, but with various improvements
+ - The cif2hkl software from iFit (http://ifit.mccode.org) is provided with McStas for easy generation of reflection 
+   lists for the Single_crystal and PowderN components
+
+
+ Components and instruments:
+ - A new set of components referred to as “Union” components, contribution by Mads Bertelsen Uni Copenhagen.
+   - Allows very rich simulation of samples and sample environment
+   - Several instrument files included to illustrate the capabilities and use
+   - See http://media.mcstas.org/ESS_DMSC_20161117/DMSC_talk_MBertelsen_McStas_Union.mp4
+ - Component and Instrument documentation headers have been uniformised in preparation for a Python mcdoc. (This new
+   tool is NOT ready for distribution with McStas 2.4.) Please look inside the existing doc headers and adhere to the
+   new format when writing new components.
+ - MCPL library updated to v. 1.1
+   - See https://mctools.github.io/mcpl/
+   - MCPL_input allows to repeat input files an integer number of times
+   - possible to modify particle energy, position and direction on repetition
+   - MCPL_output has an option to merge generated output files in case of MPI
+   - MCPL2hist.instr provides a template for easy histogram visualisation of from MCPL data.
+ - ESS_butterfly.comp provides a time-focusing mode ala what was available in ESS_moderator_long.
+ - ESS_butterfly_MCPL.instr implements the use of MCPL files in the ESS butterfly geometry
+ - PowderN can “flip” the d_phi focusing to “zoom” on a range of angles.
+ - New PSD_monitor_TOF that outputs a TOF signal pr. PSD pixel (single files). Used in templateNMX_TOF.instr
+ - A version of Isotropic_Sqw from the McStas 2.0 release has been imported under the name of Isotropic_Sqw_legacy, 
+   since some users reported that release being in better agreement with experiments. 
+   - Some issues were corrected since 2.0 and fixed in today's component
+   - Today's component has a different set of issues, see e.g. https://github.com/McStasMcXtrace/McCode/issues/300
+ - By the help of a Japanse user, we have identified issues with the performance of the supermirror coating option
+   in FermiChopper.comp. We will investigate further and adress the issue over the course of 2017. Note that the 
+   component works as expected when not implementing supermirror slits.
+ - Various bugfixes and improvements across the example instruments and component library
+
+
+ Platforms:
+ - Our macOS application bundle provides a 'miniconda' Python, including gcc, openmpi etc.
+   - Important: Please run the 'Check-PY-dependencies' script after dragging to /Applications
+   - Optionally run the 'Check-PL-dependencies' for access to the Perl tools
+ - Our Linux packages for RPM systems provide a 'miniconda' Python for all Python tool dependencies.
+   - Our RPM's were built on CentOS 7, and requires glibc-2.14, other builds can be made available on request.
+ - Our Windows installer provides a 'miniconda' Python, including gcc. 
+   - Supplemental binaries for Microsoft MPI and NeXus are provided with the installer
+   - For full documentation support, you must still install the Strawberry Perl package prior to installing McStas
+ - On Windows 10 64bit and newer, the Windows Subsytem for Linux allows a much improved McStas experience, see
+   the page http://www.mcstas.org/news/2016.html at the heading "October 6th, 2016: Use Microsofts ... "
+ 
+
+
 Changes in McStas v.2.3, April 6th, 2016
 
  McStas 2.3 is the fourth release in the 2.x series and fixes various issues with McStas 2.2a, plus 

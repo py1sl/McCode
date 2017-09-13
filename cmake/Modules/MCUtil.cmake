@@ -157,12 +157,26 @@ macro(setupMCCODE FLAVOR)
     endif()
   endmacro()
 
+  # Helper for adding leading "-" and trailing "bat"
+  macro(addDashDotBat name val)
+    if(NOT DEFINED ${name} AND NOT ${val} STREQUAL "")
+      set(${name} "-${val}.bat")
+    endif()
+  endmacro()
+  
   # Define suffix-macros that include a leading dot "."
   addDot(DOT_EXE_SUFFIX "${EXE_SUFFIX}")
   addDot(DOT_OUT_SUFFIX "${OUT_SUFFIX}")
-
+  
   addDot(DOT_PYTHON_SUFFIX "${PYTHON_SUFFIX}")
   addDot(DOT_PERL_SUFFIX   "${PERL_SUFFIX}")
+
+  if(WINDOWS)
+    # On windows we actually do -pl.bat in case of Perl
+    set(PL_TOOL_SUFFIX "-pl.bat")
+  else()
+    set(PL_TOOL_SUFFIX ".pl")
+  endif()
 
 
   # Add some special Windows/Unix CPACK configuration
@@ -175,7 +189,7 @@ macro(setupMCCODE FLAVOR)
     set(PROGRAM_SUFFIX "")
 
     # Create desktop links for mcgui py/pl and mccodego batch files
-    set(CPACK_NSIS_CREATE_ICONS "CreateShortCut '$DESKTOP\\\\${MCCODE_PREFIX}gui-${MCCODE_VERSION}-Python.lnk' '\\\\${FLAVOR}-${MCCODE_VERSION}\\\\bin\\\\mccodeguipy.bat' ")
+    set(CPACK_NSIS_CREATE_ICONS "CreateShortCut '$DESKTOP\\\\${MCCODE_PREFIX}gui-${MCCODE_VERSION}.lnk' '\\\\${FLAVOR}-${MCCODE_VERSION}\\\\bin\\\\${MCCODE_PREFIX}guistart.bat' ")
     set(CPACK_NSIS_CREATE_ICONS_EXTRA "CreateShortCut '$DESKTOP\\\\${FLAVOR}-shell-${MCCODE_VERSION}.lnk' '\\\\${FLAVOR}-${MCCODE_VERSION}\\\\bin\\\\mccodego.bat' ")
 
   else()
