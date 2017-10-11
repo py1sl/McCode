@@ -1,4 +1,4 @@
-# test of travis
+# test of travis for mcstas and mctrace
 language: c
 os:
   - linux
